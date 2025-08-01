@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Beauty Basket Alpha</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+    form { margin-bottom: 1.5rem; }
+    input, select { margin-right: .5rem; padding: .4rem; }
+    button { padding: .5rem 1rem; }
+    ul { list-style: none; padding: 0; }
+    li { margin: .5rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Beauty Basket Alpha</h1>
+  <form method="post">
+    <label>Budget: $<input name="budget" type="number" step="1" value="50" required></label>
+    <label>
+      Focus Area:
+      <select name="focus_area">
+        <option value="">Balanced</option>
+        <option value="hydration">Hydration</option>
+        <option value="acne">Acne Defense</option>
+        <option value="firmness">Firmness</option>
+        <option value="tone_evenness">Tone Evenness</option>
+        <option value="glow">Glow</option>
+      </select>
+    </label>
+    <button type="submit">Optimize</button>
+  </form>
+
+  {% if products %}
+    <h2>Recommended Products</h2>
+    <ul>
+      {% for p in products %}
+        <li>
+          <strong>{{ p.product_name }}</strong>  
+          ({{ p.product_brand }}) —  
+          ${{ p.product_price }} → Score: {{ "%.2f"|format(p.final_score) }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</body>
+</html>
