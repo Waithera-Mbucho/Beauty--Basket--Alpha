@@ -1,8 +1,9 @@
 
 import json
-import pandas as pd
 import os
 import sys
+
+import pandas as pd
 
 # The JSON file you uploaded
 JSON_FILENAME = "graphql.json"
@@ -44,8 +45,12 @@ def main():
     if df.empty:
         print(" No products found in JSON.")
     else:
-        df.to_csv("products.csv", index=False)
-        print(f" Wrote {len(df)} products to products.csv")
+ 
+      output_csv = os.path.join("data", "products.csv")
+      os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+      df.to_csv(output_csv, index=False)
+      print(f" Wrote {len(df)} products to {output_csv}")
+    
 
 if __name__ == "__main__":
     main()
