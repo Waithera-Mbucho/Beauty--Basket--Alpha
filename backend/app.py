@@ -1,6 +1,8 @@
+import ast
+
 from flask import Flask, request, render_template
 import pandas as pd
-import ast
+
 from optimizer import optimize_routine
 from factors import calculate_glow_scores
 
