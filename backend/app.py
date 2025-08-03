@@ -1,4 +1,6 @@
+
 import ast
+from typing import List, Dict, Optional
 
 from flask import Flask, request, render_template
 import pandas as pd
@@ -8,34 +10,50 @@ from factors import calculate_glow_scores
 
 app = Flask(__name__, template_folder='templates')
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/", methods=["GET", "POST"])
 def index():
-    products = None
-    if request.method == 'POST':
-        # Get budget from form, defaulting to 50 if invalid
+    products: Optional[List[Dict]] = None
+
+    if request.method == "POST":
+        # 1) Parse budget (either "NN" or "NN-MM")
+        budget_raw = request.form.get("budget", "50").strip()
         try:
-            budget = float(request.form.get('budget', 50))
+            if "-" in budget_raw:
+                min_str, max_str = budget_raw.split("-", 1)
+                min_budget = int(float(min_str))
+                max_budget = int(float(max_str))
+            else:
+                min_budget = 0
+                max_budget = int(float(budget_raw))
         except ValueError:
-            budget = 50
+            # fallback defaults
+            min_budget, max_budget = 0, 50
 
-        # Get optional focus area (e.g., "hydration", "acne", "glow")
-        focus_area = request.form.get('focus_area', None)
+        # 2) Parse optional focus area
+        focus_area = request.form.get("focus_area") or None
 
-        # Load product data
-        df = pd.read_csv('data/products.csv')
-        # Convert ingredient strings to lists
-        df['ingredients'] = df['ingredients'].apply(ast.literal_eval)
+        # 3) Load your product data
+        df = pd.read_csv("backend/products.csv")
 
-        # Calculate glow (and ingredient-based) scores
+        # 4) If you have an 'ingredients' column of string-lists, convert them
+        if "ingredients" in df.columns:
+            df["ingredients"] = df["ingredients"].apply(ast.literal_eval)
+
+        # 5) Compute your glow scores
         df = calculate_glow_scores(df, focus_area=focus_area)
 
-        # Optimize product mix under the given budget
-        selected = optimize_routine(df, budget)
+        # 6) Run the optimizer
+        selected_df = optimize_routine(df, min_budget, max_budget)
 
-        # Prepare results for the template
-        products = selected.to_dict(orient='records')
+        # 7) Prepare for the template
+        if selected_df is None:
+            products = []
+        else:
+            products = selected_df.to_dict(orient="records")
 
-    return render_template('index.html', products=products)
+    return render_template("index.html", products=products)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
+

@@ -4,7 +4,7 @@ Beauty Basket Alpha: Dermatology-Backed Skincare Optimizer
 
 Beauty Basket Alpha  is a quantitative skincare portfolio optimizer designed to help users invest in high-performing products tailored to clinical markers of skin health.  
 
-Inspired by financial modeling and backed by dermatology board standards, it uses scientifically defined skin quality factors  to deliver maximum Glow Score under a user-defined budget.
+Inspired by financial modeling and backed by dermatology board standards, it uses scientifically defined skin quality factors to deliver maximum Glow Score under a user-defined budget or budget range.
 
 ---
 

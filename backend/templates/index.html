@@ -17,8 +17,8 @@
   <h1>Beauty Basket Alpha</h1>
   <form method="post">
     <label>
-      Budget: $
-      <input name="budget" type="number" step="1" value="50" required />
+      Budget (e.g., 50 or 40-60):
+      <input name="budget" type="text" value="50" placeholder="50 or 40-60" required />
     </label>
     <label>
       Focus Area:
@@ -46,7 +46,7 @@
       {% endfor %}
     </ul>
   {% else %}
-    <p>No products to display. Submit a budget above to get recommendations!</p>
+    <p>No products to display. Submit a budget or range above to get recommendations!</p>
   {% endif %}
 </body>
 </html>

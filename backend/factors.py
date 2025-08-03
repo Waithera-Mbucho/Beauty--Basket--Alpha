@@ -6,11 +6,22 @@ import ast
 from ingredients import score_ingredients
 
 def normalize(series):
-    return (series - series.min()) / (series.max() - series.min())
+    max_val = series.max()
+    min_val = series.min()
+    if max_val == min_val:
+        return pd.Series(0, index=series.index)
+    return (series - min_val) / (max_val - min_val)
+
 
 def calculate_glow_scores(df, weights=None, focus_area=None):
     df = df.copy()
+    if df.empty:
+        return df
 
+    required = {'tone_evenness', 'surface_evenness', 'firmness', 'glow', 'ingredients'}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(f"Missing required columns: {missing}")
     default_weights = {
         'tone_evenness': 0.30,
         'surface_evenness': 0.25,
@@ -33,14 +44,14 @@ def calculate_glow_scores(df, weights=None, focus_area=None):
         default_weights['firmness'] * df['firmness_score'] +
         default_weights['glow'] * df['glow_radiance_score']
     )
-
     # Score by ingredients if focus area is given
     if focus_area:
-        df['ingredients'] = df['ingredients'].apply(ast.literal_eval)  # parse from string to list
-        df['ingredient_score'] = df['ingredients'].apply(lambda x: score_ingredients(x, focus_area))
-        df['ingredient_score'] = normalize(df['ingredient_score'])  # normalize
-        df['final_score'] = 0.7 * df['glow_score'] + 0.3 * df['ingredient_score']
+         df['ingredients'] = df['ingredients'].apply(ast.literal_eval)
+         df['ingredient_score'] = df['ingredients'].apply(lambda x: score_ingredients(x, focus_area))
+         df['ingredient_score'] = normalize(df['ingredient_score'])
+         df['final_score'] = 0.7 * df['glow_score'] + 0.3 * df['ingredient_score']
     else:
         df['final_score'] = df['glow_score']
 
     return df
+
