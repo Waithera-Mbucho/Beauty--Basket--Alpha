@@ -1,5 +1,5 @@
-
 import ast
+import os
 from typing import List, Dict, Optional
 
 from flask import Flask, request, render_template
@@ -32,10 +32,11 @@ def index():
         # 2) Parse optional focus area
         focus_area = request.form.get("focus_area") or None
 
-        # 3) Load your product data
-        df = pd.read_csv("backend/products.csv")
+        # 3) Load your product data relative to this file
+        csv_path = os.path.join(os.path.dirname(__file__), "products.csv")
+        df = pd.read_csv(csv_path)
 
-        # 4) If you have an 'ingredients' column of string-lists, convert them
+        # 4) Parse 'ingredients' string-lists once for downstream use
         if "ingredients" in df.columns:
             df["ingredients"] = df["ingredients"].apply(ast.literal_eval)
 
@@ -56,4 +57,3 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
